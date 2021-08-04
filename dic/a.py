@@ -45,23 +45,23 @@ for w in words:
 
             for sense in sh.select(".shcut-g>.sense"):
                 grammar = (
-                    sense.find("span", hclass="grammar").get_text()
-                    if sense.select(".sense .grammar")
+                    sense.select(".sense>.grammar,.sensetop>.grammar")[0].get_text()
+                    if sense.select(".sense>.grammar,.sensetop>.grammar")
                     else ""
                 )
                 use = (
-                    sense.select(".sense>.use")[0].get_text() + " "
-                    if sense.select(".sense>.use")
+                    sense.select(".sense>.use,.sensetop>.use")[0].get_text() + " "
+                    if sense.select(".sense>.use,.sensetop>.use")
                     else ""
                 )
                 cf = (
-                    sense.select(".sense>.cf")[0].get_text() + " "
-                    if sense.select(".sense>.cf")
+                    sense.select(".sense>.cf,.sensetop>.cf")[0].get_text() + " "
+                    if sense.select(".sense>.cf,.sensetop>.cf")
                     else ""
                 )
                 labels = (
-                    sense.select(".sense>.labels")[0].get_text() + " "
-                    if sense.select(".sense>.labels")
+                    sense.select(".sense>.labels,.sensetop>.labels")[0].get_text() + " "
+                    if sense.select(".sense>.labels,.sensetop>.labels")
                     else ""
                 )
                 _def = sense.select(".def")[0]
@@ -88,22 +88,29 @@ for w in words:
                 ).italic = True
                 # synonym /
                 xrefs = sense.select(".xrefs")[0] if sense.select(".xrefs") else []
-                prefix = xrefs.select(".prefix")[0] if xrefs else []
-                if xrefs and prefix.get_text().upper() == "SYNONYM":
-                    para = doc.add_paragraph(prefix.get_text().upper() + " ")
-                    for r in xrefs.select(".Ref .xh"):
-                        font1 = para.add_run(r.get_text()).font
-                        font1.color.rgb = RGBColor(0, 128, 255)
-                elif xrefs and prefix.get_text().upper() == "OPPOSITE":
-                    para = doc.add_paragraph(prefix.get_text().upper() + " ")
-                    for r in xrefs.select(".Ref .xh"):
-                        font1 = para.add_run(r.get_text()).font
-                        font1.color.rgb = RGBColor(0, 128, 255)
+                if xrefs and xrefs.select(".prefix"):
+                    prefix = xrefs.select(".prefix")[0]
+                    if prefix.get_text().upper() == "SYNONYM":
+                        para = doc.add_paragraph(prefix.get_text().upper() + " ")
+                        for r in xrefs.select(".Ref .xh"):
+                            font1 = para.add_run(r.get_text()).font
+                            font1.color.rgb = RGBColor(0, 128, 255)
+                    elif prefix.get_text().upper() == "OPPOSITE":
+                        para = doc.add_paragraph(prefix.get_text().upper() + " ")
+                        for r in xrefs.select(".Ref .xh"):
+                            font1 = para.add_run(r.get_text()).font
+                            font1.color.rgb = RGBColor(0, 128, 255)
                 # examples
                 for e in sense.select(".sense>.examples>li"):
                     e_cf = e.select(".cf")[0].get_text() if e.select(".cf") else ""
+                    e_labels = (
+                        e.select(".labels")[0].get_text() if e.select(".labels") else ""
+                    )
                     e_x = e.select(".x")[0] if e.select(".x") else ""
                     para_e = doc.add_paragraph(style="List Bullet 2")
+                    run_e_labels = para_e.add_run(e_labels + ("  " if e_labels else ""))
+                    run_e_labels.italic = True
+                    run_e_labels.font.color.rgb = RGBColor(111, 111, 111)
                     para_e.add_run(e_cf + ("  " if e_cf else "")).bold = True
                     for content in e_x.contents:
                         if re.search('<.*?("cl")+>', str(content)):
@@ -133,23 +140,23 @@ for w in words:
         else:
             for sense in senses_.select("ol>.sense"):
                 grammar = (
-                    sense.find("span", hclass="grammar").get_text()
-                    if sense.select(".sense .grammar")
+                    sense.select(".sense>.grammar,.sensetop>.grammar")[0].get_text()
+                    if sense.select(".sense>.grammar,.sensetop>.grammar")
                     else ""
                 )
                 use = (
-                    sense.select(".sense>.use")[0].get_text() + " "
-                    if sense.select(".sense>.use")
+                    sense.select(".sense>.use,.sensetop>.use")[0].get_text() + " "
+                    if sense.select(".sense>.use,.sensetop>.use")
                     else ""
                 )
                 cf = (
-                    sense.select(".sense>.sensetop>.cf")[0].get_text() + " "
-                    if sense.select(".sense>.sensetop>.cf")
+                    sense.select(".sense>.cf,.sensetop>.cf")[0].get_text() + " "
+                    if sense.select(".sense>.cf,.sensetop>.cf")
                     else ""
                 )
                 labels = (
-                    sense.select(".sense>.labels")[0].get_text() + " "
-                    if sense.select(".sense>.labels")
+                    sense.select(".sense>.labels,.sensetop>.labels")[0].get_text() + " "
+                    if sense.select(".sense>.labels,.sensetop>.labels")
                     else ""
                 )
                 _def = sense.select(".def")[0]
@@ -176,23 +183,30 @@ for w in words:
                 ).italic = True
                 # synonym /
                 xrefs = sense.select(".xrefs")[0] if sense.select(".xrefs") else []
-                prefix = xrefs.select(".prefix")[0] if xrefs else []
-                if xrefs and prefix.get_text().upper() == "SYNONYM":
-                    para = doc.add_paragraph(prefix.get_text().upper() + " ")
-                    for r in xrefs.select(".Ref .xh"):
-                        font1 = para.add_run(r.get_text()).font
-                        font1.color.rgb = RGBColor(0, 128, 255)
-                elif xrefs and prefix.get_text().upper() == "OPPOSITE":
-                    para = doc.add_paragraph(prefix.get_text().upper() + " ")
-                    for r in xrefs.select(".Ref .xh"):
-                        font1 = para.add_run(r.get_text()).font
-                        font1.color.rgb = RGBColor(0, 128, 255)
+                if xrefs and xrefs.select(".prefix"):
+                    prefix = xrefs.select(".prefix")[0]
+                    if prefix.get_text().upper() == "SYNONYM":
+                        para = doc.add_paragraph(prefix.get_text().upper() + " ")
+                        for r in xrefs.select(".Ref .xh"):
+                            font1 = para.add_run(r.get_text()).font
+                            font1.color.rgb = RGBColor(0, 128, 255)
+                    elif prefix.get_text().upper() == "OPPOSITE":
+                        para = doc.add_paragraph(prefix.get_text().upper() + " ")
+                        for r in xrefs.select(".Ref .xh"):
+                            font1 = para.add_run(r.get_text()).font
+                            font1.color.rgb = RGBColor(0, 128, 255)
 
                 # examples
                 for e in sense.select(".sense>.examples>li"):
                     e_cf = e.select(".cf")[0].get_text() if e.select(".cf") else ""
+                    e_labels = (
+                        e.select(".labels")[0].get_text() if e.select(".labels") else ""
+                    )
                     e_x = e.select(".x")[0] if e.select(".x") else ""
                     para_e = doc.add_paragraph(style="List Bullet 2")
+                    run_e_labels = para_e.add_run(e_labels + ("  " if e_labels else ""))
+                    run_e_labels.italic = True
+                    run_e_labels.font.color.rgb = RGBColor(111, 111, 111)
                     para_e.add_run(e_cf + ("  " if e_cf else "")).bold = True
                     for content in e_x.contents:
                         if re.search('<.*?("cl")+>', str(content)):
